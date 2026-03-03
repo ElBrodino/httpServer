@@ -5,13 +5,12 @@ import (
 )
 
 func main() {
-	rootString := http.Dir("/")
+	const filepathRoot = "."
 	sMux := http.NewServeMux()
 	server := http.Server{
 		Addr:    ":8080",
 		Handler: sMux,
 	}
-	fileHandler := http.FileServer(rootString)
-	sMux.Handle(string(rootString), fileHandler)
+	sMux.Handle("/", http.FileServer(http.Dir(filepathRoot)))
 	server.ListenAndServe()
 }
