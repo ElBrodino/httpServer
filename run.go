@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"net/http"
 )
 
@@ -16,8 +15,6 @@ func run() error {
 		Addr:    ":" + port,
 		Handler: mux,
 	}
-
-	log.Printf("Serving files from %s on port: %s\n", filepathRoot, port)
 
 	return srv.ListenAndServe()
 }
