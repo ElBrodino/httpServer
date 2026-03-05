@@ -51,9 +51,9 @@ func run() error {
 		w.Write([]byte("Reset hits counter"))
 	}
 
-	mux.HandleFunc("GET /healthz", healthzHandler)
-	mux.HandleFunc("GET /metrics", metricsHandler)
-	mux.HandleFunc("POST /reset", resetHandler)
+	mux.HandleFunc("GET /api/healthz", healthzHandler)
+	mux.HandleFunc("GET /api/metrics", metricsHandler)
+	mux.HandleFunc("POST /api/reset", resetHandler)
 
 	srv := &http.Server{
 		Addr:    ":" + port,
