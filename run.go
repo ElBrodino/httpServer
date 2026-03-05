@@ -1,9 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 	"sync/atomic"
 )
 
@@ -40,9 +40,16 @@ func run() error {
 
 	metricsHandler := func(w http.ResponseWriter, r *http.Request) {
 		hits := cfg.fileserverhits.Load()
-		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("Hits: " + strconv.Itoa(int(hits))))
+		w.Write([]byte(fmt.Sprintf(`
+			<html>
+				<body>
+					<h1>Welcome, Chirpy Admin</h1>
+					<p>Chirpy has been visited %d times!</p>
+				<body>
+			</html>
+			`, hits)))
 	}
 
 	resetHandler := func(w http.ResponseWriter, r *http.Request) {
@@ -52,8 +59,8 @@ func run() error {
 	}
 
 	mux.HandleFunc("GET /api/healthz", healthzHandler)
-	mux.HandleFunc("GET /api/metrics", metricsHandler)
-	mux.HandleFunc("POST /api/reset", resetHandler)
+	mux.HandleFunc("GET /admin/metrics", metricsHandler)
+	mux.HandleFunc("POST /admin/reset", resetHandler)
 
 	srv := &http.Server{
 		Addr:    ":" + port,
