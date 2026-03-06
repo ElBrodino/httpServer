@@ -42,14 +42,17 @@ func run() error {
 		hits := cfg.fileserverhits.Load()
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(fmt.Sprintf(`
+
+		metricsString := fmt.Appendf([]byte(``), `
 			<html>
 				<body>
 					<h1>Welcome, Chirpy Admin</h1>
 					<p>Chirpy has been visited %d times!</p>
 				<body>
 			</html>
-			`, hits)))
+			`, hits)
+
+		w.Write(metricsString)
 	}
 
 	resetHandler := func(w http.ResponseWriter, r *http.Request) {
