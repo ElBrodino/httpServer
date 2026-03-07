@@ -1,9 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"sync/atomic"
+	"time"
 )
 
 type apiConfig struct {
@@ -58,6 +60,42 @@ func run() error {
 			cfg.fileserverhits.Store(0)
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte("Reset hits counter"))
+		})
+
+	mux.HandleFunc("POST /api/validate_chirp",
+		func(w http.ResponseWriter, r *http.Request) {
+			type parameters struct {
+				Name string `json:"name"`
+				Age  int    `json:"age"`
+			}
+
+			decoder := json.NewDecoder(r.Body)
+			params := parameters{}
+			err := decoder.Decode(&params)
+			if err != nil {
+				respondWithError(w, 500, "Error decoding parameters")
+				return
+			}
+			respondWithJSON(w, 200, params)
+		})
+
+	mux.HandleFunc("POST /api/respondChirp",
+		func(w http.ResponseWriter, r *http.Request) {
+			type returnVals struct {
+				CreatedAt time.Time `json:"created_at"`
+				ID        int       `json:"id"`
+			}
+			respBody := returnVals{
+				CreatedAt: time.Now(),
+				ID:        123,
+			}
+			dat, err := json.Marshal(respBody)
+			if err != nil {
+				respondWithError(w, 500, "Problem encoding json")
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(200)
+			w.Write(dat)
 		})
 
 	srv := &http.Server{
